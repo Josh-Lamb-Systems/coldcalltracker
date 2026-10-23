@@ -1,7 +1,9 @@
 services:
   app:
+    # Published by .github/workflows/ci.yml. `docker compose pull` fetches it;
+    # `mise run up` builds it from this checkout instead.
+    image: ghcr.io/josh-lamb-systems/coldcalltracker:${IMAGE_TAG:-latest}
     build: .
-    image: coldcalltracker:latest
     restart: unless-stopped
     ports:
       - "${PORT:-8090}:8090"
