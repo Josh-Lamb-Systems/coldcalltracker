@@ -1,8 +1,9 @@
 # Build stage: mise installs the Node and PocketBase versions pinned in
 # mise.toml (the same ones used for local development) and builds the app.
+# mise.lock pins their download URLs and checksums.
 FROM jdxcode/mise:2026.10.18-debian AS build
 WORKDIR /app
-COPY mise.toml ./
+COPY mise.toml mise.lock ./
 RUN mise trust && mise install
 COPY package.json package-lock.json ./
 RUN mise exec -- npm ci

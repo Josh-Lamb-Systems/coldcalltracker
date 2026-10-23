@@ -1,5 +1,7 @@
 # coldcalltracker
 
+[![CI](https://github.com/Josh-Lamb-Systems/coldcalltracker/actions/workflows/ci.yml/badge.svg)](https://github.com/Josh-Lamb-Systems/coldcalltracker/actions/workflows/ci.yml)
+
 A simple application to track cold calling metrics over time. Callers tap
 four tally counters while they're on the phone (in the spirit of
 [tallycount.app](https://tallycount.app/)), and the stats page shows how the
@@ -43,10 +45,19 @@ Conversion rates:
 
 ## Run it with Docker
 
+Every push to `main` publishes an image to
+`ghcr.io/josh-lamb-systems/coldcalltracker` (see
+[Published images](#published-images)). On a server you only need
+`docker-compose.yml` and `.env.example` in a folder:
+
 ```sh
 cp .env.example .env   # set PB_ADMIN_EMAIL and PB_ADMIN_PASSWORD (8+ characters)
-mise run up            # same as: docker compose up -d --build
+docker compose pull    # fetch the published image
+docker compose up -d
 ```
+
+Run the same `pull` and `up -d` to update. From a checkout of this repo,
+`mise run up` builds the image from source instead.
 
 The app runs at <http://localhost:8090>. Everything is stored in `./data`
 (a bind mount): the SQLite database, PocketBase's logs and any backups.
@@ -71,6 +82,7 @@ Set these in `.env`; `docker compose` reads them.
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `PORT` | `8090` | Port on the host. |
+| `IMAGE_TAG` | `latest` | Image to run: `latest`, a release such as `1.2.3`, or `sha-<commit>`. |
 | `PB_ADMIN_EMAIL`, `PB_ADMIN_PASSWORD` | – | Dashboard login, created or updated on every start. If unset, the container log prints a one-time link to create the first admin. |
 | `SESSION_IDLE_MINUTES` | `120` | Open sessions with no taps for this long are ended automatically. |
 | `PUID`, `PGID` | `1000` | Owner of `./data` on the host (`id -u`, `id -g`). PocketBase runs as this user rather than root (`PUID=0` keeps root). |
@@ -102,6 +114,10 @@ Open <http://localhost:5173> for the app with hot reload. Use
 <http://localhost:8090/_/> to add a caller you can sign in as. Local data
 lives in `./pb_data`.
 
+`mise.lock` pins the download URL and checksum of each tool, which mise
+verifies on install. After changing a version in `mise.toml`, run `mise lock`
+to refresh it.
+
 | Task | What it does |
 | --- | --- |
 | `mise run dev` | PocketBase and the Vite dev server together |
@@ -109,6 +125,22 @@ lives in `./pb_data`.
 | `mise run check` | Type-check the Svelte/TypeScript code |
 | `mise run build` | Build the frontend into `pb_public/` |
 | `mise run up` / `down` / `logs` | Docker Compose |
+
+## Published images
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs the type check and
+tests on every push and pull request. It then builds the image for
+`linux/amd64` and `linux/arm64` and pushes it to the GitHub Container
+Registry:
+
+| Event | Tags published |
+| --- | --- |
+| Push to `main` | `latest`, `sha-<commit>` |
+| Tag `v1.2.3` | `1.2.3`, `1.2`, `latest`, `sha-<commit>` |
+| Pull request | none (checks that the image builds) |
+
+To cut a release: `git tag v1.0.0 && git push origin v1.0.0`. Dependabot
+keeps the workflow's pinned actions up to date.
 
 ## How it's built
 
