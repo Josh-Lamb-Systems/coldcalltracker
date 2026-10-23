@@ -1,0 +1,8 @@
+.git
+.firecrawl
+.env
+node_modules
+pb_data
+pb_public
+data
+tests
