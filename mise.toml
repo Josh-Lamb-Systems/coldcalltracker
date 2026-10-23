@@ -1,0 +1,59 @@
+[tools]
+node = "24.22.1"
+# Also installed by the Dockerfile, which reads this pin, so the container
+# always runs the same PocketBase as local development.
+pocketbase = "0.40.6"
+
+[tasks.install]
+description = "Install npm dependencies"
+run = "npm ci"
+sources = ["package.json", "package-lock.json"]
+outputs = ["node_modules/.package-lock.json"]
+
+[tasks."dev:pocketbase"]
+description = "Run PocketBase on :8090 with local data in ./pb_data"
+run = "pocketbase serve --http 127.0.0.1:8090 --dir pb_data --publicDir pb_public --hooksDir pb_hooks --migrationsDir pb_migrations"
+
+[tasks."dev:web"]
+description = "Run the Vite dev server on :5173 (proxies /api to PocketBase)"
+depends = ["install"]
+run = "npx vite"
+
+[tasks.dev]
+description = "Run PocketBase and the Vite dev server together"
+depends = ["dev:pocketbase", "dev:web"]
+
+[tasks.admin]
+description = "Create or update a local PocketBase superuser"
+usage = '''
+arg "<email>"
+arg "<password>" help="At least 8 characters"
+'''
+run = 'pocketbase superuser upsert "$usage_email" "$usage_password" --dir pb_data'
+
+[tasks.check]
+description = "Type-check the frontend"
+depends = ["install"]
+run = "npx svelte-check --tsconfig ./tsconfig.json"
+
+[tasks.test]
+description = "Run unit tests and API tests (each API test file starts its own PocketBase)"
+depends = ["install"]
+run = "npx vitest run"
+
+[tasks.build]
+description = "Build the frontend into pb_public"
+depends = ["install"]
+run = "npx vite build"
+
+[tasks.up]
+description = "Build the image and start the app with Docker Compose"
+run = "docker compose up -d --build"
+
+[tasks.down]
+description = "Stop the Docker Compose stack"
+run = "docker compose down"
+
+[tasks.logs]
+description = "Follow the container logs"
+run = "docker compose logs -f"

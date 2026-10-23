@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    image: coldcalltracker:latest
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8090}:8090"
+    environment:
+      # Dashboard (/_/) login, created or updated on every start.
+      PB_ADMIN_EMAIL: ${PB_ADMIN_EMAIL:-}
+      PB_ADMIN_PASSWORD: ${PB_ADMIN_PASSWORD:-}
+      # Open sessions with no taps for this long are ended automatically.
+      SESSION_IDLE_MINUTES: ${SESSION_IDLE_MINUTES:-120}
+      # Owner of ./data on the host (`id -u` / `id -g`).
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+    volumes:
+      # SQLite database, backups and logs.
+      - ./data:/pb/pb_data
