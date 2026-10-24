@@ -75,6 +75,13 @@ There's no public sign-up. PocketBase won't delete a caller who has sessions,
 which keeps the team's history intact. To lock someone out, change their
 password instead.
 
+### Put it on your phone's home screen
+
+On iPhone, open the app in Safari, tap **Share → Add to Home Screen**. It
+then opens full screen with its own icon, like an app. (On Android Chrome:
+**⋮ → Add to Home screen**.) The home screen copy keeps its own login, so
+sign in once more the first time you open it.
+
 ### Configuration
 
 Set these in `.env`; `docker compose` reads them.
