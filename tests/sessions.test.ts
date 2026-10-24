@@ -48,6 +48,11 @@ describe("static files", () => {
     expect((await fetch(`${server.url}/counter`)).headers.get("cache-control")).toBe("no-cache");
     expect((await fetch(`${server.url}/assets/app-1234.js`)).headers.get("cache-control")).toBeNull();
   });
+
+  it("serves the home screen manifest with its proper type", async () => {
+    const response = await fetch(`${server.url}/manifest.webmanifest`);
+    expect(response.headers.get("content-type")).toBe("application/manifest+json");
+  });
 });
 
 describe("sessions", () => {

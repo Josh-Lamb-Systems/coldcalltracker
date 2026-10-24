@@ -8,5 +8,9 @@ routerUse((e) => {
   if (!path.startsWith("/api/") && !path.startsWith("/_/") && !path.startsWith("/assets/")) {
     e.response.header().set("Cache-Control", "no-cache")
   }
+  // Go doesn't know this extension and would send text/plain.
+  if (path.endsWith(".webmanifest")) {
+    e.response.header().set("Content-Type", "application/manifest+json")
+  }
   return e.next()
 })

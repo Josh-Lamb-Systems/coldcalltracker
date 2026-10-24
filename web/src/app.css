@@ -42,6 +42,10 @@ body {
   margin: 0;
   min-height: 100vh;
   line-height: 1.4;
+  /* Opened from the iOS home screen, the page runs under the status bar and
+     beside the notch; these insets are 0 in a normal browser tab. */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
 }
 
 h1,

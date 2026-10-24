@@ -55,7 +55,8 @@
     justify-items: center;
     align-content: center;
     gap: 32px;
-    min-height: 100vh;
+    /* Fill the screen inside body's safe-area padding. */
+    min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     padding: 24px 16px;
   }
 

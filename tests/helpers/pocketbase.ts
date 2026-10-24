@@ -60,6 +60,7 @@ export async function startPocketBase(env: Record<string, string> = {}): Promise
   await mkdir(join(publicDir, "assets"), { recursive: true });
   await writeFile(join(publicDir, "index.html"), "<!doctype html><title>test</title>");
   await writeFile(join(publicDir, "assets", "app-1234.js"), "console.log(1)");
+  await writeFile(join(publicDir, "manifest.webmanifest"), "{}");
   await promisify(execFile)(BIN, ["superuser", "upsert", ADMIN.email, ADMIN.password, "--dir", dataDir]);
 
   const port = await freePort();
